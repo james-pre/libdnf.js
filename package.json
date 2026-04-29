@@ -1,6 +1,6 @@
 {
 	"name": "libdnf",
-	"version": "0.1.1",
+	"version": "0.2.0",
 	"description": "Javascript bindings for libdnf5",
 	"author": "James Prevett <jp@jamespre.dev> (https://jamespre.dev)",
 	"repository": {
