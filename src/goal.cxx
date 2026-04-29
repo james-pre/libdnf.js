@@ -35,46 +35,46 @@ void createGoal(libdnf5::Goal &goal, const Object &options)
 
 		const Object op = _op.As<Object>();
 
-		const std::string name = op.Get("name").ToString().Utf8Value();
+		const std::string type = op.Get("type").ToString().Utf8Value();
 		const std::string spec = op.Get("spec").ToString().Utf8Value();
 
 		libdnf5::GoalJobSettings settings = libdnf5::GoalJobSettings();
 
-		if (name == "debug_install")
+		if (type == "debug_install")
 			goal.add_debug_install(spec, settings);
-		else if (name == "downgrade")
+		else if (type == "downgrade")
 			goal.add_downgrade(spec, settings);
-		else if (name == "group_install")
+		else if (type == "group_install")
 			goal.add_group_install(spec, requireReason(op), settings);
-		else if (name == "group_remove")
+		else if (type == "group_remove")
 			goal.add_group_remove(spec, requireReason(op), settings);
-		else if (name == "group_upgrade")
+		else if (type == "group_upgrade")
 			goal.add_group_upgrade(spec, settings);
-		else if (name == "install")
+		else if (type == "install")
 			goal.add_install(spec, settings);
-		else if (name == "module_disable")
+		else if (type == "module_disable")
 			goal.add_module_disable(spec, settings);
-		else if (name == "module_enable")
+		else if (type == "module_enable")
 			goal.add_module_enable(spec, settings);
-		else if (name == "module_reset")
+		else if (type == "module_reset")
 			goal.add_module_reset(spec, settings);
-		else if (name == "provide_install")
+		else if (type == "provide_install")
 			goal.add_provide_install(spec, settings);
-		// else if (name == "redo_transaction")
+		// else if (type == "redo_transaction")
 		// 	goal.add_redo_transaction();
-		else if (name == "reinstall")
+		else if (type == "reinstall")
 			goal.add_reinstall(spec, settings);
-		// else if (name == "revert_transactions")
+		// else if (type == "revert_transactions")
 		// 	goal.add_revert_transactions();
-		else if (name == "remove")
+		else if (type == "remove")
 			goal.add_remove(spec, settings);
-		else if (name == "rpm_distro_sync")
+		else if (type == "rpm_distro_sync")
 			goal.add_rpm_distro_sync(settings);
-		else if (name == "rpm_downgrade")
+		else if (type == "rpm_downgrade")
 			goal.add_rpm_downgrade(spec, settings);
-		else if (name == "rpm_install")
+		else if (type == "rpm_install")
 			goal.add_rpm_install(spec, settings);
-		else if (name == "rpm_install_or_reinstall")
+		else if (type == "rpm_install_or_reinstall")
 		{
 			Value packages = op.Get("packages");
 
@@ -88,19 +88,19 @@ void createGoal(libdnf5::Goal &goal, const Object &options)
 
 			goal.add_rpm_install_or_reinstall(package_set, settings);
 		}
-		else if (name == "rpm_reason_change")
+		else if (type == "rpm_reason_change")
 			goal.add_rpm_reason_change(spec, requireReason(op), op.Has("groupId") ? op.Get("groupId").ToString().Utf8Value() : "", settings);
-		else if (name == "rpm_reinstall")
+		else if (type == "rpm_reinstall")
 			goal.add_rpm_reinstall(spec, settings);
-		else if (name == "rpm_remove")
+		else if (type == "rpm_remove")
 			goal.add_rpm_remove(spec, settings);
-		else if (name == "rpm_upgrade")
+		else if (type == "rpm_upgrade")
 			goal.add_rpm_upgrade(spec, settings, op.Get("minimal").ToBoolean());
-		else if (name == "serialized_transaction")
+		else if (type == "serialized_transaction")
 			goal.add_serialized_transaction(op.Get("path").ToString().Utf8Value(), settings);
-		else if (name == "upgrade")
+		else if (type == "upgrade")
 			goal.add_upgrade(spec, settings);
 		else
-			throw Error::New(env, "Invalid operation: " + name);
+			throw Error::New(env, "Invalid operation: " + type);
 	}
 }
