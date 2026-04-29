@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(js-libdnf5)
+project(libdnf5)
 
 add_compile_definitions(NAPI_VERSION=10)
 
