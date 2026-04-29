@@ -8,7 +8,7 @@ import type {
 	TransactionRunOptions,
 } from './transaction.ts';
 
-declare class Transaction {
+export declare class Transaction {
 	private constructor();
 
 	get packages(): TransactionPackage[];

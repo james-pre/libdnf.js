@@ -24,17 +24,15 @@ export type QueryCmp =
 	| 'iglob'
 	| 'not_iglob';
 
-export type AdvisoryQueryFilterType = 'name' | 'packages' | 'reference' | 'severity' | 'type';
-
-export interface AdvisoryQueryFilterEntry {
-	filter: AdvisoryQueryFilterType;
+export interface AdvisoryQueryFilter {
+	filter: 'name' | 'packages' | 'reference' | 'severity' | 'type';
 	value: string | string[];
 	cmp?: QueryCmp;
 }
 
 export interface PackageQueryFilterAdvisories {
 	type: 'advisories' | 'latest_unresolved_advisories';
-	advisories: AdvisoryQueryFilterEntry[];
+	advisories: AdvisoryQueryFilter[];
 	cmp?: QueryCmp;
 }
 
@@ -76,45 +74,37 @@ export interface PackageQueryFilterNoValue {
 	type: PackageQueryFilterNoValueType;
 }
 
-export type PackageQueryFilterWithLimitType =
-	| 'earliest_evr'
-	| 'earliest_evr_any_arch'
-	| 'latest_evr'
-	| 'latest_evr_any_arch';
-
 export interface PackageQueryFilterWithLimit {
-	type: PackageQueryFilterWithLimitType;
+	type: 'earliest_evr' | 'earliest_evr_any_arch' | 'latest_evr' | 'latest_evr_any_arch';
 	limit?: number;
 	cmp?: QueryCmp;
 }
 
-export type PackageQueryFilterWithValueType =
-	| 'arch'
-	| 'conflicts'
-	| 'description'
-	| 'enhances'
-	| 'epoch'
-	| 'evr'
-	| 'file'
-	| 'from_repo_id'
-	| 'location'
-	| 'name'
-	| 'nevra'
-	| 'obsoletes'
-	| 'provides'
-	| 'recommends'
-	| 'release'
-	| 'repo_id'
-	| 'requires'
-	| 'sourcerpm'
-	| 'suggests'
-	| 'summary'
-	| 'supplements'
-	| 'url'
-	| 'version';
-
 export interface PackageQueryFilterWithValue {
-	type: PackageQueryFilterWithValueType;
+	type:
+		| 'arch'
+		| 'conflicts'
+		| 'description'
+		| 'enhances'
+		| 'epoch'
+		| 'evr'
+		| 'file'
+		| 'from_repo_id'
+		| 'location'
+		| 'name'
+		| 'nevra'
+		| 'obsoletes'
+		| 'provides'
+		| 'recommends'
+		| 'release'
+		| 'repo_id'
+		| 'requires'
+		| 'sourcerpm'
+		| 'suggests'
+		| 'summary'
+		| 'supplements'
+		| 'url'
+		| 'version';
 	value: string | string[];
 	cmp?: QueryCmp;
 }
