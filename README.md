@@ -10,9 +10,6 @@ npm install libdnf
 
 ## Usage Example
 
-> [!IMPORTANT]
-> Running transactions requires root permissions (at least for system-level ones)
-
 ```ts
 import * as dnf5 from 'libdnf';
 import { createInterface } from 'node:readline/promises';

@@ -3,8 +3,10 @@ project(libdnf5)
 
 add_compile_definitions(NAPI_VERSION=10)
 
-add_definitions(-DNODE_ADDON_API_CPP_EXCEPTIONS)
-add_definitions(-DNODE_ADDON_API_CPP_EXCEPTIONS_ALL)
+add_definitions(
+	-DNODE_ADDON_API_CPP_EXCEPTIONS
+	-DNODE_ADDON_API_CPP_EXCEPTIONS_ALL
+)
 
 find_path(DNF_INCLUDE_DIR NAMES libdnf5/base/base.hpp)
 
