@@ -120,15 +120,8 @@ Value Transaction::download(const CallbackInfo &info)
 	Napi::Env env = info.Env();
 	Object options = getOptionsObject(info);
 
-	try
-	{
-		base.set_download_callbacks(std::make_unique<PackageDownloadCallbacks>(env, options));
-		tx(env).download();
-	}
-	catch (const std::exception &e)
-	{
-		throw Error::New(env, e.what());
-	}
+	base.set_download_callbacks(std::make_unique<PackageDownloadCallbacks>(env, options));
+	tx(env).download();
 
 	return env.Undefined();
 }
@@ -138,15 +131,8 @@ Value Transaction::run(const CallbackInfo &info)
 	Napi::Env env = info.Env();
 	Object options = getOptionsObject(info);
 
-	try
-	{
-		tx(env).set_callbacks(std::make_unique<PackageTransactionCallbacks>(env, options));
-		tx(env).run();
-	}
-	catch (const std::exception &e)
-	{
-		throw Error::New(env, e.what());
-	}
+	tx(env).set_callbacks(std::make_unique<PackageTransactionCallbacks>(env, options));
+	tx(env).run();
 
 	return env.Undefined();
 }
@@ -158,14 +144,7 @@ Value Transaction::setDescription(const CallbackInfo &info)
 	if (info.Length() < 1 || !info[0].IsString())
 		throw TypeError::New(env, "Expected a string");
 
-	try
-	{
-		tx(env).set_description(info[0].As<String>().Utf8Value());
-	}
-	catch (const std::exception &e)
-	{
-		throw Error::New(env, e.what());
-	}
+	tx(env).set_description(info[0].As<String>().Utf8Value());
 
 	return env.Undefined();
 }
