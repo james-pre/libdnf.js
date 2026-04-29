@@ -34,5 +34,3 @@ private:
 	Napi::Value run(const CallbackInfo &info);
 	Napi::Value setDescription(const CallbackInfo &info);
 };
-
-Object fromTransaction(const Env &env, std::unique_ptr<libdnf5::base::Transaction> transaction);

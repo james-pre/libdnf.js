@@ -169,8 +169,3 @@ Value Transaction::setDescription(const CallbackInfo &info)
 
 	return env.Undefined();
 }
-
-Object fromTransaction(const Env &env, std::unique_ptr<libdnf5::base::Transaction> transaction)
-{
-	return Transaction::NewInstance(env, std::move(transaction));
-}

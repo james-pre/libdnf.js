@@ -15,7 +15,7 @@ Value PrepareTransaction(const CallbackInfo &args)
 
 	auto transaction = std::make_unique<libdnf5::base::Transaction>(goal.resolve());
 
-	return fromTransaction(args.Env(), std::move(transaction));
+	return Transaction::NewInstance(args.Env(), std::move(transaction));
 }
 
 Value Query(const CallbackInfo &args)
