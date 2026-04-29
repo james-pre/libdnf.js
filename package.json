@@ -50,7 +50,8 @@
 		"tsx": "^4.19.1",
 		"typedoc": "^0.28.19",
 		"typescript": "^6.0.0",
-		"typescript-eslint": "^8.58.0"
+		"typescript-eslint": "^8.58.0",
+		"utilium": "^3.2.0"
 	},
 	"prettier": {
 		"singleQuote": true,
