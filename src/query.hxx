@@ -43,7 +43,7 @@ inline const schema::ObjectSchema<PackageQueryFilter> &PackageQueryFilterSchema(
 {
 	static const auto schema = s::object<PackageQueryFilter>({
 		s::field<&PackageQueryFilter::type>("type", s::string()),
-		s::field<&PackageQueryFilter::value>("value", s::variant(s::array(s::string().coerce()), s::string().coerce().defaultTo(""))),
+		s::field<&PackageQueryFilter::value>("value", s::variant(s::array(s::string().coerce()), s::string().coerce()).defaultTo("")),
 		s::field<&PackageQueryFilter::cmp>("cmp", s::string().coerce().defaultTo("eq")),
 		s::field<&PackageQueryFilter::limit>("limit", s::number().coerce().defaultTo(1)),
 		s::field<&PackageQueryFilter::exact_evr>("exact_evr", s::boolean().coerce().defaultTo(false)),
