@@ -15,6 +15,8 @@
 #include <type_traits>
 #include <utility>
 #include <vector>
+#include <tuple>
+#include <variant>
 
 /*
 __todo__ parseArgs(std::span<__todo__> &schemas, const Env &env, std::span<const Value> values);
@@ -397,6 +399,63 @@ namespace schema
 		}
 	};
 
+	template <typename... Schemas>
+	class VariantSchema : public Schema<VariantSchema<Schemas...>, std::variant<typename Schemas::result_type...>>
+	{
+	public:
+		using result_type = std::variant<typename Schemas::result_type...>;
+
+		explicit VariantSchema(Schemas... schemas) : schemas_(std::move(schemas)...)
+		{
+			static_assert(sizeof...(Schemas) > 0, "schema::variant() requires at least one schema");
+		}
+
+		result_type parseValue(const Value &value, const ParseContext &ctx) const
+		{
+			std::vector<std::string> errors;
+			errors.reserve(sizeof...(Schemas));
+
+			return parseOne<0>(value, ctx, errors);
+		}
+
+	private:
+		template <std::size_t Index>
+		result_type parseOne(const Value &value, const ParseContext &ctx, std::vector<std::string> &errors) const
+		{
+			if constexpr (Index >= sizeof...(Schemas))
+			{
+				std::string message = "does not match any allowed type";
+
+				if (!errors.empty())
+				{
+					message += ":";
+
+					for (const auto &error : errors)
+						message += "\n  - " + error;
+				}
+
+				detail::fail(value.Env(), ctx, message);
+			}
+			else
+			{
+				const auto &schema = std::get<Index>(schemas_);
+
+				try
+				{
+					using Parsed = typename std::decay_t<decltype(schema)>::result_type;
+					return result_type(std::in_place_type<Parsed>, schema.parseAt(value, ctx));
+				}
+				catch (const Error &error)
+				{
+					errors.push_back(error.Message());
+					return parseOne<Index + 1>(value, ctx, errors);
+				}
+			}
+		}
+
+		std::tuple<Schemas...> schemas_;
+	};
+
 	template <auto MemberPointer, typename InnerSchema>
 	auto field(std::string name, InnerSchema inner)
 	{
@@ -469,4 +528,10 @@ namespace schema
 		return ValueSchema{};
 	}
 
-} // namespace schema
+	template <typename... Schemas>
+	VariantSchema<std::decay_t<Schemas>...> variant(Schemas... schemas)
+	{
+		return VariantSchema<std::decay_t<Schemas>...>(std::move(schemas)...);
+	}
+
+}
