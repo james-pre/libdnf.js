@@ -24,8 +24,7 @@
 		"./*": "./dist/*.js"
 	},
 	"files": [
-		"dist",
-		"lib"
+		"dist"
 	],
 	"binary": {
 		"napi_versions": [

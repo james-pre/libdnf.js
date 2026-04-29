@@ -79,7 +79,7 @@ export interface TransactionPackage {
 
 export interface TransactionGroup {
 	group: Group;
-	actions: string;
+	action: string;
 	state: string;
 	reason: string;
 }
@@ -133,19 +133,4 @@ export interface TransactionRunOptions {
 	onVerifyStart?: TransactionTotalCallback;
 	onVerifyProgress?: TransactionAmountTotalCallback;
 	onVerifyStop?: TransactionTotalCallback;
-}
-
-export declare class Transaction {
-	private constructor();
-
-	get packages(): TransactionPackage[];
-	get packagesCount(): number;
-	get groups(): TransactionGroup[];
-	get brokenDependencyPackages(): Package[];
-	get conflictingPackages(): Package[];
-	get isEmpty(): boolean;
-
-	download(options?: TransactionDownloadOptions): void;
-	run(options?: TransactionRunOptions): void;
-	setDescription(description: string): void;
 }

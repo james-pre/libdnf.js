@@ -5,16 +5,17 @@
 		"lib": ["ESNext"],
 		"moduleResolution": "NodeNext",
 		"rootDir": "lib",
-		"noEmit": true,
+		"outDir": "dist",
 		"strict": true,
-		"checkJs": true,
+		"declaration": true,
+		"allowArbitraryExtensions": true,
 		"types": ["node"]
 	},
-	"include": ["lib/**/*.ts", "lib/**/*.js"],
+	"include": ["lib/**/*.ts"],
 	"exclude": ["node_modules"],
 	"typedocOptions": {
 		"entryPoints": ["./lib/index.ts"],
 		"out": "docs",
-		"name": "XCompile"
+		"name": "libdnf"
 	}
 }

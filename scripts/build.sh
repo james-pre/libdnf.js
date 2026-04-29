@@ -5,7 +5,11 @@ project_dir=$(dirname $( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/nul
 
 set -euo pipefail
 
+npx typedoc > /dev/null
+
 npx cmake-js -d "$project_dir" clean
 npx cmake-js -d "$project_dir" build
+
+npx tsc -p "$project_dir/tsconfig.json"
 
 source "$project_dir/node.env"
