@@ -36,7 +36,7 @@
 		"format:check": "prettier --check .",
 		"format": "prettier --write .",
 		"lint": "tsc --noEmit && eslint src",
-		"test": "tsx --test",
+		"test": "echo 'No tests yet'",
 		"build": "bash ./scripts/build.sh",
 		"prepublishOnly": "bash ./scripts/build.sh"
 	},

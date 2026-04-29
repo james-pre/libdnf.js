@@ -34,7 +34,7 @@ jobs:
               run: npm run lint
 
             - name: Build
-              run: npx tsc
+              run: npm run build
 
             - name: Test
               run: npm test
