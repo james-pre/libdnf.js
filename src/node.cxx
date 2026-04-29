@@ -1,9 +1,20 @@
-#include <libdnf5/base/base.hpp>
-#include <libdnf5/rpm/package_query.hpp>
-#include <napi.h>
+#include <libdnf5/base/goal.hpp>
+#include <libdnf5/repo/package_downloader.hpp>
 #include "common.hxx"
 #include "query.hxx"
+#include "goal.hxx"
 #include "js-data.hxx"
+
+Value PrepareTransaction(const CallbackInfo &args)
+{
+
+	libdnf5::Goal goal(base);
+	createGoal(goal, args[0].As<Object>());
+
+	libdnf5::base::Transaction transaction = goal.resolve();
+
+	return fromTransaction(args.Env(), transaction);
+}
 
 Value Query(const CallbackInfo &args)
 {
@@ -40,6 +51,7 @@ Object Init(Env env, Object exports)
 
 	exports.Set(String::New(env, "loadRepos"), Function::New(env, LoadRepos));
 	exports.Set(String::New(env, "query"), Function::New(env, Query));
+	exports.Set(String::New(env, "transaction"), Function::New(env, PrepareTransaction));
 	return exports;
 }
 

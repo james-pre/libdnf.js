@@ -75,3 +75,29 @@ export interface Package {
 	_stringDescription: string;
 	hash: number;
 }
+
+export interface CompPackage {
+	name: string;
+	type: string;
+	condition: string;
+}
+
+export interface Group {
+	groupId: string;
+	name: string;
+	description: string;
+	translatedName: string;
+	translatedDescription: string;
+	order: string;
+	isUserVisible: boolean;
+	isDefault: boolean;
+	packages: CompPackage[];
+}
+
+export interface Nevra {
+	name: string;
+	epoch: string;
+	version: string;
+	release: string;
+	arch: string;
+}

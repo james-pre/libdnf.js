@@ -1,33 +1,8 @@
 
 #include "common.hxx"
 #include "js-data.hxx"
+#include "callbacks.hxx"
 #include <string>
-#include <utility>
-
-// JS Array -> std::vector<T>
-template <typename T, typename Convert>
-std::vector<T> toVector(const Array &array, Convert &&convert)
-{
-	std::vector<T> result;
-	result.reserve(array.Length());
-
-	for (uint32_t i = 0; i < array.Length(); i++)
-		result.push_back(std::forward<Convert>(convert)(array.Get(i)));
-
-	return result;
-}
-
-// std::vector<T> -> JS Array
-template <typename T, typename Convert>
-Array fromVector(const Env &env, const std::vector<T> &values, Convert &&convert)
-{
-	Array result = Array::New(env, values.size());
-
-	for (uint32_t i = 0; i < values.size(); i++)
-		result.Set(i, std::forward<Convert>(convert)(env, values[i]));
-
-	return result;
-}
 
 std::vector<std::string> toStringVector(const Array &array)
 {
@@ -75,7 +50,7 @@ Object fromChangelog(const Env &env, const libdnf5::rpm::Changelog &changelog)
 {
 	Object result = Object::New(env);
 	result.Set("author", changelog.get_author());
-	result.Set("date", Date::New(env, changelog.get_timestamp()));
+	result.Set("date", Date::New(env, changelog.get_timestamp() * 1000));
 	result.Set("text", changelog.get_text());
 	return result;
 }
@@ -111,7 +86,7 @@ Object fromPackage(const Env &env, const libdnf5::rpm::Package &pkg)
 	result.Set("sourceDebugInfoName", pkg.get_debuginfo_name_of_source());
 	result.Set("debugInfoName", pkg.get_debuginfo_name());
 	result.Set("sourceRpm", pkg.get_sourcerpm());
-	result.Set("buildTime", Date::New(env, pkg.get_build_time()));
+	result.Set("buildTime", Date::New(env, pkg.get_build_time() * 1000));
 	result.Set("packager", pkg.get_packager());
 	result.Set("vendor", pkg.get_vendor());
 	result.Set("url", pkg.get_url());
@@ -143,7 +118,7 @@ Object fromPackage(const Env &env, const libdnf5::rpm::Package &pkg)
 	result.Set("originRepoId", pkg.get_from_repo_id());
 	unsigned long long installTime = pkg.get_install_time();
 	if (installTime)
-		result.Set("installTime", Date::New(env, installTime));
+		result.Set("installTime", Date::New(env, installTime * 1000));
 
 	result.Set("repoId", pkg.get_repo_id());
 	result.Set("repoName", pkg.get_repo_name());
@@ -151,6 +126,160 @@ Object fromPackage(const Env &env, const libdnf5::rpm::Package &pkg)
 	result.Set("_string", pkg.to_string());
 	result.Set("_stringDescription", pkg.to_string_description());
 	result.Set("hash", pkg.get_hash());
+
+	return result;
+}
+
+Object fromNevra(const Env &env, const libdnf5::rpm::Nevra &nevra)
+{
+	Object result = Object::New(env);
+	result.Set("name", nevra.get_name());
+	result.Set("epoch", nevra.get_epoch());
+	result.Set("version", nevra.get_version());
+	result.Set("release", nevra.get_release());
+	result.Set("arch", nevra.get_arch());
+	return result;
+}
+
+Object fromCompPackage(const Env &env, const libdnf5::comps::Package &pkg)
+{
+	Object result = Object::New(env);
+	result.Set("name", pkg.get_name());
+	result.Set("type", pkg.get_type_string());
+	result.Set("condition", pkg.get_condition());
+	return result;
+}
+
+Object fromGroup(const Env &env, libdnf5::comps::Group &group)
+{
+	Object result = Object::New(env);
+
+	result.Set("groupId", group.get_groupid());
+	result.Set("name", group.get_name());
+	result.Set("description", group.get_description());
+	result.Set("translatedName", group.get_translated_name());
+	result.Set("translatedDescription", group.get_translated_description());
+	result.Set("order", group.get_order());
+	result.Set("isUserVisible", group.get_uservisible());
+	result.Set("isDefault", group.get_default());
+	result.Set("packages", fromVector(env, group.get_packages(), fromCompPackage));
+
+	return result;
+}
+
+Object fromTxGroup(const Env &env, const libdnf5::base::TransactionGroup &txgroup)
+{
+	Object result = Object::New(env);
+
+	auto group = txgroup.get_group();
+	result.Set("group", fromGroup(env, group));
+	result.Set("action", transaction_item_action_to_string(txgroup.get_action()));
+	result.Set("state", transaction_item_state_to_string(txgroup.get_state()));
+	result.Set("reason", transaction_item_reason_to_string(txgroup.get_reason()));
+
+	return result;
+}
+
+Object fromTxPackage(const Env &env, const libdnf5::base::TransactionPackage &txpkg)
+{
+	Object result = Object::New(env);
+
+	result.Set("package", fromPackage(env, txpkg.get_package()));
+	result.Set("action", transaction_item_action_to_string(txpkg.get_action()));
+	result.Set("state", transaction_item_state_to_string(txpkg.get_state()));
+	result.Set("reason", transaction_item_reason_to_string(txpkg.get_reason()));
+	result.Set("replaces", fromVector(env, txpkg.get_replaces(), fromPackage));
+	result.Set("replacedBy", fromVector(env, txpkg.get_replaced_by(), fromPackage));
+
+	return result;
+}
+
+static Object getOptionsObject(const CallbackInfo &info)
+{
+	Env env = info.Env();
+
+	if (info.Length() == 0 || info[0].IsUndefined() || info[0].IsNull())
+		return Object::New(env);
+
+	if (!info[0].IsObject())
+		throw TypeError::New(env, "Expected an options object");
+
+	return info[0].As<Object>();
+}
+
+static Value transaction_download(const CallbackInfo &info)
+{
+	Env env = info.Env();
+	auto *tx = static_cast<libdnf5::base::Transaction *>(info.Data());
+
+	Object options = getOptionsObject(info);
+
+	try
+	{
+		base.set_download_callbacks(std::make_unique<PackageDownloadCallbacks>(env, options));
+		tx->download();
+	}
+	catch (const std::exception &e)
+	{
+		throw Error::New(env, e.what());
+	}
+
+	return env.Undefined();
+}
+
+static Value transaction_run(const CallbackInfo &info)
+{
+	Env env = info.Env();
+	auto *tx = static_cast<libdnf5::base::Transaction *>(info.Data());
+
+	Object options = getOptionsObject(info);
+
+	try
+	{
+		tx->set_callbacks(std::make_unique<PackageTransactionCallbacks>(env, options));
+		tx->run();
+	}
+	catch (const std::exception &e)
+	{
+		throw Error::New(env, e.what());
+	}
+
+	return env.Undefined();
+}
+
+static Value transaction_set_description(const CallbackInfo &info)
+{
+	Env env = info.Env();
+	auto *tx = static_cast<libdnf5::base::Transaction *>(info.Data());
+
+	if (info.Length() < 1 || !info[0].IsString())
+		throw TypeError::New(env, "Expected a string");
+
+	try
+	{
+		tx->set_description(info[0].As<String>().Utf8Value());
+	}
+	catch (const std::exception &e)
+	{
+		throw Error::New(env, e.what());
+	}
+
+	return env.Undefined();
+}
+
+Object fromTransaction(const Env &env, libdnf5::base::Transaction &transaction)
+{
+	Object result = Object::New(env);
+
+	result.Set("packages", fromVector(env, transaction.get_transaction_packages(), fromTxPackage));
+	result.Set("packagesCount", transaction.get_transaction_packages_count());
+	result.Set("groups", fromVector(env, transaction.get_transaction_groups(), fromTxGroup));
+	result.Set("brokenDependencyPackages", fromVector(env, transaction.get_broken_dependency_packages(), fromPackage));
+	result.Set("conflictingPackages", fromVector(env, transaction.get_conflicting_packages(), fromPackage));
+	result.Set("isEmpty", transaction.empty());
+	result.Set("download", Function::New(env, transaction_download, "Transaction::download", &transaction));
+	result.Set("run", Function::New(env, transaction_run, "Transaction::run", &transaction));
+	result.Set("setDescription", Function::New(env, transaction_set_description, "Transaction::set_description", &transaction));
 
 	return result;
 }
