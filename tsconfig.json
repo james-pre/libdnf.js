@@ -1,0 +1,20 @@
+{
+	"compilerOptions": {
+		"module": "NodeNext",
+		"target": "ESNext",
+		"lib": ["ESNext"],
+		"moduleResolution": "NodeNext",
+		"rootDir": "lib",
+		"noEmit": true,
+		"strict": true,
+		"checkJs": true,
+		"types": ["node"]
+	},
+	"include": ["lib/**/*.ts", "lib/**/*.js"],
+	"exclude": ["node_modules"],
+	"typedocOptions": {
+		"entryPoints": ["./lib/index.ts"],
+		"out": "docs",
+		"name": "XCompile"
+	}
+}

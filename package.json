@@ -1,0 +1,67 @@
+{
+	"name": "libdnf",
+	"version": "0.0.1",
+	"description": "Javascript bindings for libdnf5",
+	"author": "James Prevett <jp@jamespre.dev> (https://jamespre.dev)",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/james-pre/js-libdnf.git"
+	},
+	"funding": {
+		"type": "individual",
+		"url": "https://github.com/sponsors/james-pre"
+	},
+	"homepage": "https://github.com/james-pre/js-libdnf#readme",
+	"bugs": {
+		"url": "https://github.com/james-pre/js-libdnf/issues"
+	},
+	"license": "LGPL-3.0-or-later",
+	"type": "module",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"exports": {
+		".": "./dist/index.js",
+		"./*": "./dist/*.js"
+	},
+	"files": [
+		"dist",
+		"lib"
+	],
+	"binary": {
+		"napi_versions": [
+			7
+		]
+	},
+	"scripts": {
+		"format:check": "prettier --check .",
+		"format": "prettier --write .",
+		"lint": "tsc --noEmit && eslint src",
+		"test": "tsx --test",
+		"build": "bash ./scripts/build.sh",
+		"prepublishOnly": "npx tsc"
+	},
+	"devDependencies": {
+		"@eslint/js": "^10.0.1",
+		"@types/node": "^25.5.0",
+		"cmake-js": "^8.0.0",
+		"eslint": "^10.1.0",
+		"globals": "^17.4.0",
+		"prettier": "^3.2.5",
+		"tsx": "^4.19.1",
+		"typedoc": "^0.28.19",
+		"typescript": "^6.0.0",
+		"typescript-eslint": "^8.58.0"
+	},
+	"prettier": {
+		"singleQuote": true,
+		"useTabs": true,
+		"trailingComma": "es5",
+		"tabWidth": 4,
+		"printWidth": 120,
+		"arrowParens": "avoid",
+		"experimentalOperatorPosition": "start"
+	},
+	"dependencies": {
+		"node-addon-api": "^8.7.0"
+	}
+}

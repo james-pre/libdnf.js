@@ -1,0 +1,9 @@
+node_modules
+build
+lib/*.node
+docs
+tmp
+.*
+!.github
+!.vscode
+!.gitignore
