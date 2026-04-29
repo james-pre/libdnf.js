@@ -40,17 +40,17 @@ declare const dnf5: {
 	/**
 	 * Load default repositories
 	 */
-	loadRepos(): void;
+	loadRepos(this: void): void;
 
 	/**
 	 * Query the loaded repositories using the given filters
 	 */
-	query(...filters: PackageQueryFilter[]): Package[];
+	query(this: void, ...filters: PackageQueryFilter[]): Package[];
 
 	/**
 	 * Create a new transaction
 	 */
-	transaction(init: TransactionInit): Transaction;
+	transaction(this: void, init: TransactionInit): Transaction;
 };
 
 export default dnf5;
