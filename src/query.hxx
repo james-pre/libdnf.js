@@ -1,5 +1,6 @@
 #pragma once
 
+#include <span>
 #include "common.hxx"
 #include "schema.hxx"
 
@@ -76,7 +77,7 @@ inline libdnf5::rpm::PackageQuery createPackageQuery(std::span<const Value> filt
 		filters.push_back(filter);
 	}
 
-	return createPackageQuery(filters);
+	return createPackageQuery(std::span<const PackageQueryFilter>(filters.data(), filters.size()));
 }
 
 inline libdnf5::rpm::PackageQuery createPackageQuery(const CallbackInfo &args)
@@ -87,7 +88,7 @@ inline libdnf5::rpm::PackageQuery createPackageQuery(const CallbackInfo &args)
 	for (unsigned int i = 0; i < args.Length(); i++)
 		filters.push_back(args[i]);
 
-	return createPackageQuery(filters);
+	return createPackageQuery(std::span<const Value>(filters.data(), filters.size()));
 }
 
 inline libdnf5::rpm::PackageQuery createPackageQuery(const Array &array)
@@ -98,5 +99,5 @@ inline libdnf5::rpm::PackageQuery createPackageQuery(const Array &array)
 	for (unsigned int i = 0; i < array.Length(); i++)
 		filters.push_back(array[i]);
 
-	return createPackageQuery(filters);
+	return createPackageQuery(std::span<const Value>(filters.data(), filters.size()));
 }
