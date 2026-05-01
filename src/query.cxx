@@ -101,7 +101,7 @@ libdnf5::advisory::AdvisoryQuery createAdvisoryQuery(const std::vector<AdvisoryQ
 	return query;
 }
 
-libdnf5::rpm::PackageQuery createPackageQuery(std::span<const PackageQueryFilter> filters)
+libdnf5::rpm::PackageQuery createPackageQuery(const std::vector<PackageQueryFilter> &filters)
 {
 	libdnf5::rpm::PackageQuery query(base);
 

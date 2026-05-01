@@ -56,9 +56,9 @@ inline const schema::ObjectSchema<PackageQueryFilter> &PackageQueryFilterSchema(
 	return schema;
 }
 
-libdnf5::rpm::PackageQuery createPackageQuery(std::span<const PackageQueryFilter> filters);
+libdnf5::rpm::PackageQuery createPackageQuery(const std::vector<PackageQueryFilter> &filters);
 
-inline libdnf5::rpm::PackageQuery createPackageQuery(std::span<const Value> filterValues)
+inline libdnf5::rpm::PackageQuery createPackageQuery(const std::vector<Value> &filterValues)
 {
 	std::vector<PackageQueryFilter> filters;
 	filters.reserve(filterValues.size());
@@ -77,7 +77,7 @@ inline libdnf5::rpm::PackageQuery createPackageQuery(std::span<const Value> filt
 		filters.push_back(filter);
 	}
 
-	return createPackageQuery(std::span<const PackageQueryFilter>(filters.data(), filters.size()));
+	return createPackageQuery(filters);
 }
 
 inline libdnf5::rpm::PackageQuery createPackageQuery(const CallbackInfo &args)
@@ -88,7 +88,7 @@ inline libdnf5::rpm::PackageQuery createPackageQuery(const CallbackInfo &args)
 	for (unsigned int i = 0; i < args.Length(); i++)
 		filters.push_back(args[i]);
 
-	return createPackageQuery(std::span<const Value>(filters.data(), filters.size()));
+	return createPackageQuery(filters);
 }
 
 inline libdnf5::rpm::PackageQuery createPackageQuery(const Array &array)
@@ -99,5 +99,5 @@ inline libdnf5::rpm::PackageQuery createPackageQuery(const Array &array)
 	for (unsigned int i = 0; i < array.Length(); i++)
 		filters.push_back(array[i]);
 
-	return createPackageQuery(std::span<const Value>(filters.data(), filters.size()));
+	return createPackageQuery(filters);
 }
